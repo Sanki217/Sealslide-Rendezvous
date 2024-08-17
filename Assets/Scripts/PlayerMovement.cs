@@ -100,9 +100,15 @@ public class PlayerMovement : MonoBehaviour
 
         // Clamp Y rotation
         float clampedYRotation = Mathf.Clamp(currentSteeringAngle, minYRotation, maxYRotation);
-        Quaternion targetRotation = Quaternion.Euler(0, clampedYRotation, 0);
+
+ float targetXRotation = Mathf.MoveTowardsAngle(transform.eulerAngles.x, 0f, returnSpeed * Time.fixedDeltaTime);
+    float targetZRotation = Mathf.MoveTowardsAngle(transform.eulerAngles.z, 0f, returnSpeed * Time.fixedDeltaTime);
+
+        Quaternion targetRotation = Quaternion.Euler(targetXRotation, clampedYRotation, targetZRotation);
         
         // Smoothly interpolate rotation towards the target rotation
         rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, returnSpeed * Time.fixedDeltaTime));
+
+Debug.DrawRay(transform.position, Vector3.down * groundCheckDistance, Color.red);
     }
 }
