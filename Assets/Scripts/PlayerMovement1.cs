@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerMovement1 : MonoBehaviour
 {
-    // Movement speed settings
+    
     [Header("Movement Settings")]
     [SerializeField] private float startingMovementSpeed = 2f; // Starting forward speed
     [SerializeField] private float maxMovementSpeed = 5f; // Maximum forward speed
@@ -12,16 +12,15 @@ public class PlayerMovement1 : MonoBehaviour
     [SerializeField] private float steerSpeed = 2f; // How fast the player can steer
     [SerializeField] private float maxSteerAngle = 30f; // Maximum angle for steering
 
-    // Y Rotation limits
+   
     [Header("Rotation Limits")]
     [SerializeField] private float minYRotation = -45f; // Minimum Y rotation
     [SerializeField] private float maxYRotation = 45f; // Maximum Y rotation
 
-    // Return to default rotation settings
+ 
     [Header("Return to Default Settings")]
     [SerializeField] private float returnSpeed = 1f; // Speed of returning to default rotation
 
-    // Jump settings
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 5f; // Jump force
     [SerializeField] private LayerMask groundLayer; // Layer for ground detection
@@ -31,22 +30,14 @@ public class PlayerMovement1 : MonoBehaviour
     [Header("Gravity Settings")]
     [SerializeField] private float gravityModifier = 1f; // Modifier for gravity
 
-    // Reference to the Rigidbody component
     private Rigidbody rb;
-
-    // Current steering angle
     private float currentSteeringAngle;
-
-    // Current movement speed, visible in Inspector
-    [SerializeField] private float currentMovementSpeed; // Start at startingMovementSpeed
-
-    // Ground check state
+    public float currentMovementSpeed; 
     private bool isGrounded;
 
     // Reference to the seal (child object)
     private Transform sealTransform;
 
-    // Initialize the Rigidbody component
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -58,18 +49,10 @@ public class PlayerMovement1 : MonoBehaviour
         // Initialize the current movement speed
         currentMovementSpeed = startingMovementSpeed;
 
-        // Get reference to the seal child object
-        sealTransform = transform.Find("Seal");
-        if (sealTransform == null)
-        {
-            Debug.LogError("Seal child object is missing from this GameObject.");
-        }
-
         // Apply initial gravity modifier
         Physics.gravity *= gravityModifier;
     }
 
-    // Update is called once per frame
     private void Update()
     {
         // Check if the player is grounded using a SphereCast
@@ -130,12 +113,5 @@ public class PlayerMovement1 : MonoBehaviour
         rb.rotation = Quaternion.Euler(lockedRotation);
     }
 
-    // This method allows the gravity modifier to be changed in the Inspector at runtime
-    private void OnValidate()
-    {
-        if (rb != null)
-        {
-            Physics.gravity = new Vector3(0, -9.81f, 0) * gravityModifier; // Reset gravity to default and apply modifier
-        }
-    }
+  
 }
