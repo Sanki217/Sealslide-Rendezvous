@@ -17,12 +17,16 @@ public class SegmentTrigger : MonoBehaviour
             SegmentMovement newSegmentMovement = newSegment.GetComponent<SegmentMovement>();
 
             // Get the SegmentMovement component from the current segment (the one triggering the spawn)
-            SegmentMovement currentSegmentMovement = other.GetComponentInParent<SegmentMovement>();
+            SegmentMovement currentSegmentMovement = other.GetComponent<SegmentMovement>();
 
-            // If both segments have the SegmentMovement component, pass the current speed to the new segment
+            // If both segments have the SegmentMovement component, calculate the speed for the new segment
             if (newSegmentMovement != null && currentSegmentMovement != null)
             {
-                newSegmentMovement.SetInitialSpeed(currentSegmentMovement.CurrentSpeed);
+                // Calculate the difference between the initial speed and the current speed of the previous segment
+                float speedDifference = currentSegmentMovement.CurrentSpeed - currentSegmentMovement.initialSpeed;
+
+                // Set the new segment's speed to the current speed of the previous segment
+                newSegmentMovement.SetInitialSpeed(currentSegmentMovement.CurrentSpeed + speedDifference);
             }
         }
     }

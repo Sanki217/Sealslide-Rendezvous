@@ -19,7 +19,12 @@ public class SegmentMovement : MonoBehaviour
 
     void Start()
     {
-        currentSpeed = initialSpeed;   // Set the initial speed for the first platform
+        // If currentSpeed hasn't been set externally, initialize it with initialSpeed
+        if (currentSpeed == 0)
+        {
+            currentSpeed = initialSpeed;   // Only the first segment should start with this speed
+        }
+
         targetPosition = transform.position;  // Start at the current position
     }
 
@@ -32,7 +37,7 @@ public class SegmentMovement : MonoBehaviour
         targetPosition += Vector3.back * currentSpeed * Time.fixedDeltaTime;
 
         // Smoothly move towards the target position using Lerp
-        transform.position = Vector3.Lerp(transform.position, targetPosition, 0.1f);  // Adjust the Lerp factor for desired smoothness
+        transform.position = Vector3.Lerp(transform.position, targetPosition, 1f);  // Adjust the Lerp factor for desired smoothness
 
         // Check if the segment is past the destroy position
         if (transform.position.z <= destroyZPosition)
