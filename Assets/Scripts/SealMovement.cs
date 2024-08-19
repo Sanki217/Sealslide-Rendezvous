@@ -1,40 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class SealMovement : MonoBehaviour
 {
     [Header("Surface Movement Settings")]
-    public float steerSpeed = 5f;      // Speed at which the seal steers left and right on the surface
-    public float returnSpeed = 2f;     // Speed at which the seal returns to the center (X = 0) on the surface
-    //public Vector3 surfaceCenterOfGravity = new Vector3(0f, -1f, 0f); // Center of gravity on the surface
+    public float steerSpeed = 5f;
+    public float returnSpeed = 2f;
 
     [Header("Underwater Movement Settings")]
-    public float underwaterSteerSpeed = 3f;  // Speed at which the seal steers left, right, up, and down underwater
-    public float underwaterReturnSpeed = 1f; // Speed at which the seal returns to the center (X = 0, Y = -10, Z = 0) underwater
-    public Vector3 underwaterCenterOfGravity = new Vector3(0f, -10f, 0f); // Center of gravity underwater
+    public float underwaterSteerSpeed = 3f;
+    public float underwaterReturnSpeed = 1f;
+    public Vector3 underwaterCenterOfGravity = new Vector3(0f, -10f, 0f);
 
     [Header("Speed Limit Settings")]
-    public float maxXSpeed = 5f;  // Maximum speed in the X direction
-    public float maxYSpeed = 5f;  // Maximum speed in the Y direction
+    public float maxXSpeed = 5f;
+    public float maxYSpeed = 5f;
 
     [Header("Position Constraints")]
-    public float minX = -50f;  // Minimum X position to stop steering left
-    public float maxX = 50f;   // Maximum X position to stop steering right
+    public float minX = -50f;
+    public float maxX = 50f;
+
+    [Header("Camera Settings")]
+    public CinemachineVirtualCamera virtualCamera; 
+    public float minZOffset = -10f; 
+    public float maxZOffset = -30f; 
+    public float maxSpeedForZOffset = 10f;
+
+    [Header("Jump Settings")]
+    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundCheckDistance = 0.5f;
+    [SerializeField] private float groundCheckRadius = 0.3f;
+
+    [Header("Gravity Settings")]
+    [SerializeField] private float gravityModifier = 1f;
 
     private Rigidbody rb;
     private Vector3 startPosition;
     private bool isGrounded;
     private bool isUnderwater;
-
-    [Header("Jump Settings")]
-    [SerializeField] private float jumpForce = 5f; // Jump force
-    [SerializeField] private LayerMask groundLayer; // Layer for ground detection
-    [SerializeField] private float groundCheckDistance = 0.5f; // Distance for ground check
-    [SerializeField] private float groundCheckRadius = 0.3f; // Radius for ground check sphere
-
-    [Header("Gravity Settings")]
-    [SerializeField] private float gravityModifier = 1f; // Modifier for gravity
 
     void Start()
     {
@@ -56,9 +62,6 @@ public class SealMovement : MonoBehaviour
         }
         else
         {
-            // Set the center of gravity for surface movement
-            // rb.centerOfMass = surfaceCenterOfGravity;
-
             // Jump logic when on the surface
             if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
@@ -80,6 +83,9 @@ public class SealMovement : MonoBehaviour
 
         // Apply the speed limits for X and Y axes
         LimitSpeed();
+
+        // Adjust the camera Z offset based on the player's speed
+        AdjustCameraZOffset();
     }
 
     void HandleSurfaceMovement()
@@ -111,7 +117,6 @@ public class SealMovement : MonoBehaviour
     {
         Vector3 currentPosition = transform.position;
 
-        // Handle steering (X-axis movement) underwater
         if (Input.GetKey(KeyCode.A) && currentPosition.x > minX)
         {
             rb.AddForce(Vector3.left * underwaterSteerSpeed, ForceMode.Acceleration);
@@ -121,7 +126,6 @@ public class SealMovement : MonoBehaviour
             rb.AddForce(Vector3.right * underwaterSteerSpeed, ForceMode.Acceleration);
         }
 
-        // Handle vertical movement (Y-axis) underwater
         if (Input.GetKey(KeyCode.W))
         {
             rb.AddForce(Vector3.up * underwaterSteerSpeed, ForceMode.Acceleration);
@@ -131,7 +135,7 @@ public class SealMovement : MonoBehaviour
             rb.AddForce(Vector3.down * underwaterSteerSpeed, ForceMode.Acceleration);
         }
 
-        // Gradually return to X = 0, Y = -10, and Z = 0 underwater
+        // Gradually return to center of gravity underwater
         float returnForceX = (0 - currentPosition.x) * underwaterReturnSpeed;
         float returnForceY = (underwaterCenterOfGravity.y - currentPosition.y) * underwaterReturnSpeed;
         float returnForceZ = (0 - currentPosition.z) * underwaterReturnSpeed;
@@ -141,20 +145,30 @@ public class SealMovement : MonoBehaviour
 
     void LimitSpeed()
     {
-        // Limit the speed in the X direction
         Vector3 velocity = rb.velocity;
         if (Mathf.Abs(velocity.x) > maxXSpeed)
         {
             velocity.x = Mathf.Sign(velocity.x) * maxXSpeed;
         }
 
-        // Limit the speed in the Y direction
         if (Mathf.Abs(velocity.y) > maxYSpeed)
         {
             velocity.y = Mathf.Sign(velocity.y) * maxYSpeed;
         }
 
-        // Assign the limited velocity back to the Rigidbody
         rb.velocity = velocity;
     }
+
+    void AdjustCameraZOffset()
+    {
+        float currentSpeed = rb.velocity.magnitude;
+
+        float t = Mathf.Clamp01(currentSpeed / maxSpeedForZOffset);
+        float targetZOffset = Mathf.Lerp(minZOffset, maxZOffset, t);
+
+        Vector3 followOffset = virtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
+        followOffset.z = Mathf.Lerp(followOffset.z, targetZOffset, Time.deltaTime * returnSpeed);
+        virtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = followOffset;
+    }
+
 }
