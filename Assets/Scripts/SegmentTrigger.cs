@@ -13,7 +13,7 @@ public class SegmentTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("SegmentTrigger"))
         {
-            Instantiate(Segment, new Vector3(0, 0, 300), Quaternion.identity);
+            Instantiate(Segment, new Vector3(0, 13, 300), Quaternion.identity);
         }
     }
 }
