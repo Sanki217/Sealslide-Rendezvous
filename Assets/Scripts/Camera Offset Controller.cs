@@ -11,6 +11,8 @@ public class CameraOffsetController : MonoBehaviour
     [Header("Offset Settings")]
     public float minOffsetX = -2f;  // Minimum X value for the offset
     public float maxOffsetX = 2f;   // Maximum X value for the offset
+    public float minXPosition = -70f; // The X position where the offset should be at maxOffsetX
+    public float maxXPosition = 70f;  // The X position where the offset should be at minOffsetX
     public float lerpSpeed = 2f;    // Speed of the lerp
 
     private CinemachineComposer composer;  // Reference to the Composer component
@@ -28,11 +30,11 @@ public class CameraOffsetController : MonoBehaviour
     {
         if (player != null && composer != null)
         {
-            // Calculate the target offset based on the player's X position
-            float targetOffsetX = Mathf.Lerp(minOffsetX, maxOffsetX, (player.position.x + 1) / 2);
+            // Calculate the normalized position of the player within the specified range
+            float normalizedX = Mathf.InverseLerp(minXPosition, maxXPosition, player.position.x);
 
-            // Clamp the target offset between the minimum and maximum values
-            targetOffsetX = Mathf.Clamp(targetOffsetX, minOffsetX, maxOffsetX);
+            // Map the normalized value to the offset range
+            float targetOffsetX = Mathf.Lerp(maxOffsetX, minOffsetX, normalizedX);
 
             // Smoothly interpolate the current offset to the target offset
             float newOffsetX = Mathf.Lerp(composer.m_TrackedObjectOffset.x, targetOffsetX, Time.deltaTime * lerpSpeed);
