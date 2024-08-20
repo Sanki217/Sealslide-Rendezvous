@@ -11,7 +11,7 @@ public class SegmentTrigger : MonoBehaviour
         if (other.gameObject.CompareTag("SegmentTrigger"))
         {
             // Instantiate the new segment at the desired position
-            GameObject newSegment = Instantiate(Segment, new Vector3(0, 13, 777), Quaternion.identity);
+            GameObject newSegment = Instantiate(Segment, new Vector3(5, 3, 150), Quaternion.identity);
 
             // Get the SegmentMovement component from the newly created segment
             SegmentMovement newSegmentMovement = newSegment.GetComponent<SegmentMovement>();
