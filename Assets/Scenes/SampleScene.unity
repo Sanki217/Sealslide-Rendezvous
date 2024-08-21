@@ -1514,9 +1514,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c601d0e5eae489347a7a400cb0cc1f7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  steerSpeed: 7
+  steerSpeed: 9
   returnSpeed: 0.1
-  underwaterSteerSpeed: 10
+  underwaterSteerSpeed: 11
   underwaterReturnSpeed: 0
   maxXSpeed: 10
   maxYSpeed: 15
