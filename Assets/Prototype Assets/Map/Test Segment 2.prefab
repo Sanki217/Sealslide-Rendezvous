@@ -4270,7 +4270,7 @@ MonoBehaviour:
   initialSpeed: 10
   acceleration: 0.1
   currentSpeed: 0
-  destroyZPosition: -700
+  destroyZPosition: -150
 --- !u!1 &8071919179773582576
 GameObject:
   m_ObjectHideFlags: 0
