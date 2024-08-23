@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SegmentTrigger
   - Destroy
+  - TimeSlower
   layers:
   - Default
   - TransparentFX
