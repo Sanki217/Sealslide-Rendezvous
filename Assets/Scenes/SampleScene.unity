@@ -2891,7 +2891,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxZRotation: 200
-  rotationMultiplier: 4.58
+  zRotationMultiplier: 4
+  maxXRotation: 200
+  xRotationMultiplier: 4
   smoothTime: 0.1
 --- !u!1 &6778469504852888672
 GameObject:
