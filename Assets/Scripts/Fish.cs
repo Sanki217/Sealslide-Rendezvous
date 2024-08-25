@@ -67,6 +67,9 @@ public class Fish : MonoBehaviour
         // Increment score and update the UI
         GameManager.Instance.IncreaseScore(1);
 
+        // Add fish to the charge bar
+        GameManager.Instance.AddFishToChargeBar();
+
         // Destroy the fish object
         Destroy(gameObject);
     }

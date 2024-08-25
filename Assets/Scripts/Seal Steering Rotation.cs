@@ -6,57 +6,44 @@ public class SealSteeringRotation : MonoBehaviour
     public float zRotationMultiplier = 2f;  // Multiplier to amplify the Z rotation
     public float maxXRotation = 20f;  // Maximum X rotation angle (in degrees)
     public float xRotationMultiplier = 1f;  // Multiplier to amplify the X rotation
-    public float smoothTime = 0.1f;   // Smooth transition time for rotation
+    public float smoothTime = 0.2f;   // Smooth transition time for rotation
 
     private Rigidbody playerRigidbody; // Reference to the parent's Rigidbody
-    private float currentZRotation;   // Current Z rotation angle
-    private float zRotationVelocity;  // Used for smooth transition
-    private float currentXRotation;   // Current X rotation angle
-    private float xRotationVelocity;  // Used for smooth transition
+    private Quaternion targetRotation; // Target rotation based on player movement
+    private Quaternion currentRotation; // Current rotation of the seal
 
     void Start()
     {
         // Get the Rigidbody component from the parent (Player)
         playerRigidbody = GetComponentInParent<Rigidbody>();
+        currentRotation = transform.localRotation; // Initialize current rotation
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // Ensure we have the player's Rigidbody
         if (playerRigidbody != null)
         {
-            // --- Z Rotation (Based on Horizontal Speed) ---
-            float horizontalSpeed = playerRigidbody.velocity.x;
+            // --- Z Rotation (Based on Normalized Horizontal Speed) ---
+            float normalizedHorizontalSpeed = Mathf.Clamp(playerRigidbody.velocity.x / 10f, -1f, 1f);
 
-            // Map the horizontal speed to Z rotation angle and apply the multiplier
-            float targetZRotation = -Mathf.Lerp(0f, maxZRotation, Mathf.Abs(horizontalSpeed) / maxZRotation) * zRotationMultiplier;
+            // Calculate target Z rotation with normalized speed
+            float targetZRotation = -normalizedHorizontalSpeed * maxZRotation * zRotationMultiplier;
 
-            // Adjust the target rotation direction based on left or right movement
-            if (horizontalSpeed < 0)
-            {
-                targetZRotation = -targetZRotation;
-            }
+            // --- X Rotation (Based on Normalized Vertical Speed) ---
+            float normalizedVerticalSpeed = Mathf.Clamp(playerRigidbody.velocity.y / 10f, -1f, 1f);
 
-            // Smoothly rotate the seal to the target Z rotation
-            currentZRotation = Mathf.SmoothDamp(currentZRotation, targetZRotation, ref zRotationVelocity, smoothTime);
+            // Calculate target X rotation with normalized speed
+            float targetXRotation = -normalizedVerticalSpeed * maxXRotation * xRotationMultiplier;
 
-            // --- X Rotation (Based on Vertical Speed) ---
-            float verticalSpeed = playerRigidbody.velocity.y;
+            // Set the target rotation with both X and Z rotations
+            targetRotation = Quaternion.Euler(targetXRotation, transform.localRotation.eulerAngles.y, targetZRotation);
 
-            // Map the vertical speed to X rotation angle and apply the multiplier
-            float targetXRotation = -Mathf.Lerp(0f, maxXRotation, Mathf.Abs(verticalSpeed) / maxXRotation) * xRotationMultiplier;
+            // Smoothly interpolate from current rotation to target rotation
+            currentRotation = Quaternion.Slerp(currentRotation, targetRotation, Time.fixedDeltaTime / smoothTime);
 
-            // Adjust the target rotation direction based on upward or downward movement
-            if (verticalSpeed < 0)
-            {
-                targetXRotation = -targetXRotation;
-            }
-
-            // Smoothly rotate the seal to the target X rotation
-            currentXRotation = Mathf.SmoothDamp(currentXRotation, targetXRotation, ref xRotationVelocity, smoothTime);
-
-            // Apply the rotation to the seal (rotate on both X and Z axes)
-            transform.localRotation = Quaternion.Euler(currentXRotation, transform.localRotation.eulerAngles.y, currentZRotation);
+            // Apply the rotation to the seal
+            transform.localRotation = currentRotation;
         }
     }
 }
