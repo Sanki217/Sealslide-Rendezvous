@@ -10,6 +10,7 @@ public class PlayerHealth : MonoBehaviour
 
     private float regenTimer;  // Timer for health regeneration
     public TextMeshProUGUI healthText;  // Reference to the UI Text for displaying health
+    public GameObject gameOverText;  // Reference to the Game Over UI Text
 
     public GameObject dangerIndicator;  // The red cube or danger indicator
 
@@ -18,12 +19,17 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         UpdateHealthUI();
         dangerIndicator.SetActive(false);  // Hide the danger indicator initially
+
+        if (gameOverText != null)
+        {
+            gameOverText.SetActive(false);  // Hide game over text at the start
+        }
     }
 
     void Update()
     {
-        // Regenerate health if not at max health
-        if (currentHealth < maxHealth)
+        // Regenerate health if not at max health and player is not at 0 health
+        if (currentHealth < maxHealth && currentHealth > 0)
         {
             regenTimer += Time.deltaTime;
             if (regenTimer >= regenTime)
@@ -55,7 +61,6 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth = 0;
             UpdateHealthUI();
-            // Handle game over
             GameOver();
         }
     }
@@ -67,7 +72,17 @@ public class PlayerHealth : MonoBehaviour
 
     void GameOver()
     {
-        // Implement game over logic here (e.g., stop the game, show game over screen)
-        Debug.Log("Game Over");
+        // Display the Game Over text
+        if (gameOverText != null)
+        {
+            gameOverText.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("GameOverText is not assigned in the Inspector!");
+        }
+
+        // Stop the game
+        GameManager.Instance.TriggerGameOver();
     }
 }

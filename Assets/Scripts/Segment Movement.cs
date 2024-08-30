@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SegmentMovement : MonoBehaviour
@@ -12,7 +10,8 @@ public class SegmentMovement : MonoBehaviour
 
     public float destroyZPosition = -10f;  // The Z position at which the segment should be destroyed
 
-    // Public property to access currentSpeed
+    private bool isMoving = true;  // Flag to track if the segment should keep moving
+
     public float CurrentSpeed
     {
         get { return currentSpeed; }
@@ -20,34 +19,38 @@ public class SegmentMovement : MonoBehaviour
 
     void Start()
     {
-        // If currentSpeed hasn't been set externally, initialize it with initialSpeed
         if (currentSpeed == 0)
         {
-            currentSpeed = initialSpeed;   // Only the first segment should start with this speed
+            currentSpeed = initialSpeed;
         }
 
-        targetPosition = transform.position;  // Start at the current position
+        targetPosition = transform.position;
     }
 
     void FixedUpdate()
     {
+        if (!isMoving) return;  // Stop moving if the game is over
+
         // Calculate the new speed with acceleration
         currentSpeed += acceleration * Time.fixedDeltaTime;
-
-        // Clamp the speed to the maximum speed
         currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
 
         // Calculate the target position based on the speed
         targetPosition += Vector3.back * currentSpeed * Time.fixedDeltaTime;
 
         // Smoothly move towards the target position using Lerp
-        transform.position = Vector3.Lerp(transform.position, targetPosition, 0.1f);  // Adjust the Lerp factor for desired smoothness
+        transform.position = Vector3.Lerp(transform.position, targetPosition, 0.1f);
 
         // Check if the segment is past the destroy position
         if (transform.position.z <= destroyZPosition)
         {
             Destroy(gameObject);
         }
+    }
+
+    public void StopMovement()
+    {
+        isMoving = false;
     }
 
     // Method to set the initial speed (used by the spawner)

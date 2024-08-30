@@ -2,16 +2,20 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public int damage = 2;  // Damage dealt by the enemy
+    public int damageAmount = 2;  // Amount of damage dealt to the player
 
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
+        // Check if the object collided with is the player
         if (collision.gameObject.CompareTag("Player"))
         {
+            // Get the PlayerHealth component from the player
             PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(damage);
+                // Inflict damage on the player
+                playerHealth.TakeDamage(damageAmount);
             }
         }
     }
