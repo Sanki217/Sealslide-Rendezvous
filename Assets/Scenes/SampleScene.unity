@@ -3624,7 +3624,7 @@ MonoBehaviour:
   minX: -100
   maxX: 100
   virtualCamera: {fileID: 1340882757}
-  minZOffset: -1
+  minZOffset: -0.9
   maxZOffset: -2
   maxSpeedForZOffset: 10
   jumpForce: 7.5
@@ -4207,6 +4207,7 @@ MonoBehaviour:
   maxXRotation: 30
   xRotationMultiplier: 1
   smoothTime: 0.2
+  yReturnSpeed: 2
 --- !u!1 &6778469504852888672
 GameObject:
   m_ObjectHideFlags: 0
@@ -4236,6 +4237,10 @@ PrefabInstance:
     - target: {fileID: 2637678791778427564, guid: df9685c6cfd5b0b45986c02f6b87f1b4, type: 3}
       propertyPath: m_Name
       value: Trampoline
+      objectReference: {fileID: 0}
+    - target: {fileID: 2637678791778427564, guid: df9685c6cfd5b0b45986c02f6b87f1b4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8313871458887428311, guid: df9685c6cfd5b0b45986c02f6b87f1b4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4315,7 +4320,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 0
+  m_Constraints: 8
   m_CollisionDetection: 2
 --- !u!114 &8514504322721185659
 MonoBehaviour:

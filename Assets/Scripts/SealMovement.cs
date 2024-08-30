@@ -8,6 +8,7 @@ public class SealMovement : MonoBehaviour
     [Header("Surface Movement Settings")]
     public float steerSpeed = 5f;
     public float returnSpeed = 2f;
+   
 
     [Header("Underwater Movement Settings")]
     public float underwaterSteerSpeed = 3f;
