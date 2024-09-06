@@ -8,10 +8,11 @@ public class GameManager : MonoBehaviour
     public Transform collectionPoint;       // Collection point (mouth position)
     public TextMeshProUGUI scoreText;       // UI text for the score
     public TextMeshProUGUI gameOverText;    // UI text for Game Over
+    public TextMeshProUGUI pressAnyKeyText; // UI text for "Press any key"
 
     public GameObject[] chargeBarSlots;     // UI slots for the charge bar
     private int chargeCount = 0;            // Number of filled slots in the charge bar
-    private int score = 0;                  // Player's score
+    private int score = 0;                  // Player's score (fish collected in the current game)
 
     public float dashForce = 50f;           // Force applied during dash
     private Rigidbody playerRigidbody;      // Reference to the player's Rigidbody
@@ -39,8 +40,9 @@ public class GameManager : MonoBehaviour
         sealMovement = FindObjectOfType<SealMovement>();
         playerRigidbody = sealMovement.GetComponent<Rigidbody>();
 
-        // Initially hide the Game Over text
+        // Initially hide the Game Over and "Press any key" texts
         gameOverText.gameObject.SetActive(false);
+        pressAnyKeyText.gameObject.SetActive(false);
     }
 
     public void IncreaseScore(int amount)
@@ -75,10 +77,10 @@ public class GameManager : MonoBehaviour
             PerformDash();
         }
 
-        // Allow game restart with "R" key when game is over
-        if (isGameOver && Input.GetKeyDown(KeyCode.R))
+        // Check for any key press after game over to go to the main menu
+        if (isGameOver && Input.anyKeyDown)
         {
-            RestartGame();
+            GoToMainMenu();
         }
     }
 
@@ -97,6 +99,17 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
         gameOverText.gameObject.SetActive(true);  // Show Game Over text
 
+        // Stop the score from increasing
+        FindObjectOfType<PointsManager>().StopScoring();
+
+        // Save collected fish to total fish (persistent storage)
+        int totalFish = PlayerPrefs.GetInt("TotalFish", 0);
+        totalFish += score;  // Add the fish collected in this session to the total
+        PlayerPrefs.SetInt("TotalFish", totalFish);
+
+        // Show "Press any key to continue" text
+        pressAnyKeyText.gameObject.SetActive(true);
+
         // Optionally, disable player movement
         sealMovement.enabled = false;
 
@@ -108,9 +121,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RestartGame()
+    private void GoToMainMenu()
     {
-        // Restart the game (reload the scene, reset variables, etc.)
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        // Load the main menu scene (replace "MainMenu" with your main menu scene's name)
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }
